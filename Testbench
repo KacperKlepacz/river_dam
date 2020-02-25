@@ -1,0 +1,111 @@
+library IEEE;
+use IEEE.Std_logic_1164.all;
+use IEEE.Numeric_Std.all;
+
+entity zapora_tb is
+end;
+
+architecture bench of zapora_tb is
+
+  component zapora
+      generic (
+          low_level : integer := 2;
+          high_level : integer := 5
+      );
+      port (
+          x: in unsigned(2 downto 0);
+          clk,reset: in std_logic;
+          y: out std_logic );
+      end component;
+
+  signal x: unsigned(2 downto 0);
+  signal clk,reset: std_logic;
+  signal y: std_logic ;
+
+  constant clock_period: time := 10 ns;
+  signal stop_the_clock: boolean;
+
+begin
+
+  -- Insert values for generic parameters !!
+  uut: zapora
+                 port map ( x          => x,
+                            clk        => clk,
+                            reset      => reset,
+                            y          => y );
+
+  stimulus: process
+  begin
+  
+    -- Put initialisation code here
+reset <= '1';
+ 
+wait for 100 ns;
+ 
+reset <= '0';
+ 
+x <= "101";
+ 
+wait for 20 ns;
+ 
+x <= "100";
+ 
+wait for 20 ns;
+ 
+x <= "011";
+ 
+wait for 20 ns;
+ 
+x <= "010";
+ 
+wait for 20 ns;
+
+x <= "011";
+ 
+wait for 20 ns;
+x <= "110";
+ 
+wait for 20 ns;
+x <= "110";
+ 
+wait for 20 ns;
+x <= "110";
+ 
+wait for 20 ns;
+ 
+x <= "101";
+ 
+wait for 20 ns;
+ 
+x <= "100";
+ 
+wait for 20 ns;
+ 
+x <= "011";
+ 
+wait for 20 ns;
+
+x <= "010";
+ 
+wait for 20 ns;
+x <= "100";
+ 
+wait for 20 ns;
+x <= "110";
+ 
+wait for 20 ns;
+
+    -- Put test bench stimulus code here
+    wait;
+  end process;
+
+  clocking: process
+  begin
+    while not stop_the_clock loop
+      clk <= '0', '1' after clock_period / 2;
+      wait for clock_period;
+    end loop;
+    wait;
+  end process;
+
+end;
