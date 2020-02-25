@@ -1,0 +1,64 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity zapora is
+    generic (
+        low_level : integer := 2;
+        high_level : integer := 5
+    );
+    port (
+        x: in unsigned(2 downto 0);
+        clk,reset: in std_logic;
+        y: out std_logic );
+    end zapora;
+
+architecture Behavioral of zapora is
+        type stan is (dam_open, dam_closed);
+        signal stan_obecny, stan_nastepny : stan;
+        signal y_i : std_logic;
+begin       
+
+SYNC_PROC: process (clk)
+begin
+        if clk'event and clk = '1' then
+        if reset = '1' then
+                stan_obecny <= dam_open;
+                y <= '0';
+        else
+                stan_obecny <= stan_nastepny;
+                y <= y_i;
+        end if;
+        end if;
+end process;
+
+OUTPUT_DECODE: process (stan_obecny, x)
+begin
+        if ((stan_obecny = dam_open and x <= 2) or (stan_obecny = dam_closed and x >=5 )) then
+            y_i <= '1';
+        else 
+            y_i <= '0';
+        end if;
+    end process;
+
+
+NEXT_STATE_DECODE: process (x,stan_obecny)
+        begin
+        case stan_obecny is
+            when dam_open =>
+                if x <= low_level then
+                    stan_nastepny <= dam_closed;
+                else
+                    stan_nastepny <= dam_open;    
+                 end if;
+            when dam_closed =>
+                if x >= high_level then
+                    stan_nastepny <= dam_open;
+                else
+                    stan_nastepny <= dam_closed;     
+                 end if;
+            when others =>
+                    stan_nastepny <= dam_open;             
+        end case;
+    end process;             
+end Behavioral;
